@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia de Estudos Interativo - Polícia Federal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: A single-page application with a fixed sidebar navigation for seamless transitions between key sections: 'Início' (overview), 'Estratégia CEBRASPE' (exam strategy), 'Disciplinas' (interactive subject breakdown), 'Metodologias' (study techniques), and 'Recursos' (tools and materials). The 'Disciplinas' section is the core, featuring a dynamic Chart.js visualization of topic frequencies linked to an interactive content area. This structure was chosen to transform the linear report into a non-linear, user-driven exploration tool, allowing users to quickly identify high-priority topics and drill down into details as needed, which is more efficient for study planning and review. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Topic frequency percentages for each subject. -> Goal: Compare topic importance. -> Viz/Method: Interactive Horizontal Bar Chart (Chart.js/Canvas). -> Interaction: Clicking a bar updates the detail view. -> Justification: Visual comparison is faster than reading lists; interaction connects overview with details.
+        - Report Info: Detailed topic descriptions and practical applications. -> Goal: Inform and Organize. -> Viz/Method: Dynamic content cards/accordion (HTML/Tailwind). -> Interaction: Content appears on chart/list click. -> Justification: Reduces cognitive load by showing only relevant details on demand.
+        - Report Info: CEBRASPE exam strategy ('chute direcionado'). -> Goal: Explain a process. -> Viz/Method: Step-by-step visual guide using HTML/CSS Flexbox and Unicode icons. -> Interaction: Static, clear visual flow. -> Justification: A visual process diagram is more intuitive than a block of text for procedural instructions.
+        - Report Info: Study resources (courses, books). -> Goal: Organize options. -> Viz/Method: A responsive grid of styled cards (HTML/Tailwind). -> Interaction: Cards are visually distinct and can be containers for future links. -> Justification: A grid is more scannable and visually appealing than a standard list or table.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfcfb;
+            color: #383838;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-height: 500px;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            background-color: #0d9488;
+            color: white;
+            font-weight: 600;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .subject-button.active {
+            background-color: #0f766e;
+            color: white;
+            border-color: #0f766e;
+        }
+         .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .subtopic-checkbox:checked + label {
+            text-decoration: line-through;
+            color: #888;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-stone-100 border-r border-stone-200 p-4 md:p-6 flex-shrink-0">
+            <h1 class="text-2xl font-bold text-teal-800 mb-8">Guia PF</h1>
+            <nav id="main-nav" class="space-y-2">
+                <a href="#inicio" class="nav-link flex items-center p-3 rounded-lg hover:bg-stone-200">
+                    <span class="mr-3 text-lg">🏠</span> Início
+                </a>
+                <a href="#estrategia" class="nav-link flex items-center p-3 rounded-lg hover:bg-stone-200">
+                    <span class="mr-3 text-lg">🎯</span> Estratégia CEBRASPE
+                </a>
+                <a href="#disciplinas" class="nav-link flex items-center p-3 rounded-lg hover:bg-stone-200">
+                    <span class="mr-3 text-lg">📚</span> Disciplinas
+                </a>
+                <a href="#metodologias" class="nav-link flex items-center p-3 rounded-lg hover:bg-stone-200">
+                    <span class="mr-3 text-lg">💡</span> Metodologias
+                </a>
+                <a href="#recursos" class="nav-link flex items-center p-3 rounded-lg hover:bg-stone-200">
+                    <span class="mr-3 text-lg">🛠️</span> Recursos
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            
+            <!-- Início Section -->
+            <section id="inicio" class="content-section">
+                <h2 class="text-4xl font-bold text-teal-900 mb-4">Guia Estratégico para o Concurso da Polícia Federal</h2>
+                <p class="text-lg text-stone-600 mb-8">Uma ferramenta interativa para otimizar seus estudos e focar nos tópicos mais relevantes para o cargo de Agente, com base na análise da banca CEBRASPE.</p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-10">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-stone-200">
+                        <h3 class="font-bold text-teal-800 text-xl mb-2">Vagas Previstas (2025)</h3>
+                        <p class="text-4xl font-bold text-stone-700">1.000+</p>
+                        <p class="text-sm text-stone-500">Para diversos cargos de nível superior.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-stone-200">
+                        <h3 class="font-bold text-teal-800 text-xl mb-2">Banca Examinadora</h3>
+                        <p class="text-4xl font-bold text-stone-700">CEBRASPE</p>
+                        <p class="text-sm text-stone-500">Formato "Certo/Errado" com penalização.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md border border-stone-200">
+                        <h3 class="font-bold text-teal-800 text-xl mb-2">Remuneração (Agente)</h3>
+                        <p class="text-4xl font-bold text-stone-700">Até R$26.8k</p>
+                         <p class="text-sm text-stone-500">Remuneração inicial atrativa.</p>
+                    </div>
+                </div>
+
+                <div class="bg-teal-50 border-l-4 border-teal-500 p-6 rounded-lg mb-8">
+                    <h3 class="font-bold text-xl text-teal-900 mb-3">Como usar este guia?</h3>
+                    <p class="text-teal-800">Navegue pelas seções ao lado para explorar as estratégias de prova, mergulhar nas disciplinas com gráficos interativos, conhecer metodologias de estudo eficazes e descobrir os melhores recursos para sua preparação. Cada seção foi projetada para oferecer uma visão clara e objetiva do caminho para a sua aprovação.</p>
+                </div>
+
+                <!-- Overall Progress Bar -->
+                <div class="mt-8">
+                    <h3 class="font-bold text-xl text-teal-800 mb-2">Progresso Geral dos Estudos</h3>
+                    <div class="w-full bg-gray-200 rounded-full h-4 relative overflow-hidden">
+                        <div id="overall-progress-bar" class="bg-teal-600 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+                        <span id="overall-progress-text" class="absolute inset-0 flex items-center justify-center text-xs font-semibold text-white">0%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Estratégia CEBRASPE Section -->
+            <section id="estrategia" class="content-section">
+                <h2 class="text-4xl font-bold text-teal-900 mb-2">Dominando a Banca CEBRASPE</h2>
+                <p class="text-lg text-stone-600 mb-8">Entender a lógica da banca é o primeiro passo para a aprovação. O formato "Certo/Errado" com penalização não testa apenas conhecimento, mas também estratégia e controle emocional.</p>
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-stone-200">
+                    <h3 class="text-2xl font-bold text-center text-teal-800 mb-6">O "Chute Direcionado": Uma Estratégia Inteligente</h3>
+                    <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">Para candidatos bem preparados (acima de 80% de acerto nos simulados), o chute direcionado pode aumentar a nota final. Não é um chute aleatório, mas uma decisão baseada em análise.</p>
+                    
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-4 text-center">
+                        <div class="flex-1 p-4">
+                            <div class="text-5xl mb-3">1️⃣</div>
+                            <h4 class="font-semibold text-lg text-stone-800">Resolva o que Sabe</h4>
+                            <p class="text-sm text-stone-500">Primeiro, garanta os pontos das questões que você tem certeza absoluta.</p>
+                        </div>
+                        <div class="text-2xl text-stone-300 hidden md:block">➔</div>
+                        <div class="flex-1 p-4">
+                            <div class="text-5xl mb-3">2️⃣</div>
+                            <h4 class="font-semibold text-lg text-stone-800">Marque a Incerteza</h4>
+                            <p class="text-sm text-stone-500">Identifique as questões que geram dúvida com um asterisco (*).</p>
+                        </div>
+                        <div class="text-2xl text-stone-300 hidden md:block">➔</div>
+                        <div class="flex-1 p-4">
+                            <div class="text-5xl mb-3">3️⃣</div>
+                            <h4 class="font-semibold text-lg text-stone-800">Contabilize</h4>
+                            <p class="text-sm text-stone-500">Crie uma tabela para contar quantas marcações 'Certo' e 'Errado' você já fez com certeza.</p>
+                        </div>
+                        <div class="text-2xl text-stone-300 hidden md:block">➔</div>
+                        <div class="flex-1 p-4">
+                            <div class="text-5xl mb-3">4️⃣</div>
+                            <h4 class="font-semibold text-lg text-stone-800">Equilibre e Chute</h4>
+                            <p class="text-sm text-stone-500">Use a contagem para chutar nas questões com *, buscando o equilíbrio estatístico da banca.</p>
+                        </div>
+                    </div>
+                     <div class="mt-8 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-lg">
+                        <p class="font-semibold text-amber-900">Atenção às "Pegadinhas": Palavras como <span class="font-bold">"sempre", "nunca", "exclusivamente"</span> geralmente indicam itens errados. A desconfiança é uma ferramenta de estudo!</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Disciplinas Section -->
+            <section id="disciplinas" class="content-section">
+                <h2 class="text-4xl font-bold text-teal-900 mb-2">Análise por Disciplina</h2>
+                <p class="text-lg text-stone-600 mb-8">Explore os tópicos mais cobrados em cada matéria. Use o gráfico para visualizar as prioridades e clique nos itens para ver os detalhes e sua aplicação prática no trabalho da PF.</p>
+                
+                <div id="subject-buttons" class="flex flex-wrap gap-3 mb-8">
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-stone-200 min-h-[500px]">
+                        <h3 id="chart-title" class="text-2xl font-bold text-center text-teal-800 mb-4">Tópicos Mais Cobrados</h3>
+                        <div class="chart-container">
+                            <canvas id="topicsChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="topic-details" class="space-y-4">
+                        <div class="text-center p-8 text-stone-500">
+                            <span class="text-4xl">☝️</span>
+                            <p>Selecione uma disciplina e clique em um tópico no gráfico ou na lista para ver os detalhes.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Metodologias Section -->
+            <section id="metodologias" class="content-section">
+                <h2 class="text-4xl font-bold text-teal-900 mb-2">Metodologias de Estudo Eficazes</h2>
+                <p class="text-lg text-stone-600 mb-8">Aprovação não é sobre quantidade, mas sobre qualidade. Adote técnicas que aceleram o aprendizado e a retenção do conteúdo.</p>
+                <div id="methodologies-container" class="space-y-4">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-teal-500 bg-teal-50 text-teal-900">
+                        <div class="flex items-start gap-4">
+                            <span class="text-3xl">❓</span>
+                            <div>
+                                <h3 class="text-xl font-bold">Estudo Ativo por Questões</h3>
+                                <p class="text-stone-600 mt-1">Resolver provas anteriores do CEBRASPE é o método mais eficaz. Ajuda a entender o estilo da banca, aplicar a teoria e, principalmente, aprender com os erros. Pratique em plataformas como o <a href="https://www.qconcursos.com/questoes-de-concursos/questoes" target="_blank" class="text-teal-700 underline hover:text-teal-900">Qconcursos</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-sky-500 bg-sky-50 text-sky-900">
+                        <div class="flex items-start gap-4">
+                            <span class="text-3xl">🧠</span>
+                            <div>
+                                <h3 class="text-xl font-bold">Mnemônicos e Mapas Mentais</h3>
+                                <p class="text-stone-600 mt-1">Crie ou use mnemônicos (ex: LIMPE) e mapas visuais para memorizar regras e leis. Eles transformam informações densas em gatilhos de memória rápidos.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-amber-500 bg-amber-50 text-amber-900">
+                        <div class="flex items-start gap-4">
+                            <span class="text-3xl">🔄</span>
+                            <div>
+                                <h3 class="text-xl font-bold">Revisão Periódica</h3>
+                                <p class="text-stone-600 mt-1">O cérebro esquece. Crie um ciclo de revisões (24h, 7 dias, 30 dias) para transferir o conhecimento da memória de curto prazo para a de longo prazo. Revisar é tão importante quanto aprender.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recursos Section -->
+            <section id="recursos" class="content-section">
+                <h2 class="text-4xl font-bold text-teal-900 mb-2">Recursos Essenciais para Aprovação</h2>
+                <p class="text-lg text-stone-600 mb-8">Uma seleção de ferramentas e materiais que podem fazer a diferença na sua preparação.</p>
+                <div id="resources-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Resources will be dynamically inserted here -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+<script>
+    let studyData = {
+        subjects: {
+            portugues: {
+                name: "Língua Portuguesa",
+                icon: "📘",
+                chartData: {
+                    labels: ['Interpretação Textual', 'Gramática Sintática', 'Ortografia e Semântica', 'Concordância e Regência', 'Reescrita e Pronomes'],
+                    data: [30, 20, 15, 15, 20],
+                },
+                topics: [
+                    { title: "Interpretação Textual", detail: "Principal foco da prova. Avalia a capacidade de extrair informações explícitas e implícitas, identificar a finalidade do texto e as relações lógico-discursivas.", application: "Habilidade crucial para analisar depoimentos, relatórios de inteligência e documentos em investigações, garantindo a compreensão correta dos fatos.",
+                      subtopics: [
+                          { name: "Compreensão e Interpretação de Textos", completed: false },
+                          { name: "Tipos e Gêneros Textuais", completed: false }
+                      ]
+                    },
+                    { title: "Ortografia, Acentuação Gráfica e Crase", detail: "Dominar as regras de acentuação, uso do hífen e grafia correta, além do uso da crase, é a base para a clareza e formalidade na escrita.", application: "A base da formalidade e clareza na escrita de documentos oficiais, evitando ambiguidades e erros gramaticais.",
+                      subtopics: [
+                          { name: "Ortografia", completed: false },
+                          { name: "Acentuação Gráfica", completed: false },
+                          { name: "Crase", completed: false }
+                      ]
+                    },
+                    { title: "Classes de Palavras e Estrutura", detail: "Ser capaz de identificar e classificar corretamente cada palavra e entender sua função no período é o alicerce para toda a análise sintática.", application: "Permite a análise precisa da estrutura de documentos e comunicações, garantindo a correta interpretação legal e oficial.",
+                      subtopics: [
+                          { name: "Classes de Palavras", completed: false },
+                          { name: "Formação e Estrutura das Palavras", completed: false }
+                      ]
+                    },
+                    { title: "Termos da Oração e Análise Sintática", detail: "Compreender a função de cada termo na oração, incluindo as particularidades de 'se', 'que' e 'como', é essencial para a construção e análise de frases complexas.", application: "Fundamental para a construção de frases com clareza e precisão em relatórios e inquéritos, evitando interpretações equivocadas.",
+                      subtopics: [
+                          { name: "Termos da Oração", completed: false },
+                          { name: "Partícula 'se'", completed: false },
+                          { name: "Vocábulo 'que'", completed: false },
+                          { name: "Vocábulo 'como'", completed: false }
+                      ]
+                    },
+                    { title: "Concordância e Vozes Verbais", detail: "Entender as regras que regem a relação de número e gênero entre os termos, além das vozes verbais, é crucial para evitar erros gramaticais básicos e garantir a correção do texto.", application: "Garante a correção gramatical e a formalidade na comunicação oficial, transmitindo profissionalismo e credibilidade, especialmente em depoimentos.",
+                      subtopics: [
+                          { name: "Concordância Verbal", completed: false },
+                          { name: "Concordância Nominal", completed: false },
+                          { name: "Vozes Verbais", completed: false }
+                      ]
+                    },
+                    { title: "Semântica e Regência", detail: "Dominar o significado das palavras, a relação de dependência entre verbos/nomes e seus complementos é vital para a precisão e clareza textual.", application: "Essencial para a precisão da linguagem em peças jurídicas e relatórios, evitando ambiguidades e garantindo a correta interpretação dos fatos.",
+                      subtopics: [
+                          { name: "Semântica", completed: false },
+                          { name: "Regência Verbal", completed: false },
+                          { name: "Regência Nominal", completed: false }
+                      ]
+                    },
+                    { title: "Função Sintática e Colocação Pronominal", detail: "Conhecer a função sintática dos pronomes e as regras de colocação pronominal garante a correção gramatical e a fluidez do texto.", application: "Permite a escrita de documentos e comunicações oficiais com total correção gramatical e fluidez, essencial para a credibilidade.",
+                      subtopics: [
+                          { name: "Função Sintática dos Pronomes Átonos", completed: false },
+                          { name: "Função Sintática dos Pronomes Relativos", completed: false },
+                          { name: "Colocação Pronominal", completed: false }
+                      ]
+                    },
+                    { title: "Coesão Textual", detail: "Elementos de referenciação, substituição, repetição, conectores e sequenciação textual, e tempos e modos verbais.", application: "A compreensão da coesão é a ponte para a análise da estrutura sintática, crucial para a redação de documentos formais.",
+                      subtopics: [
+                          { name: "Elementos de Referenciação, Substituição e Repetição", completed: false },
+                          { name: "Conectores e Sequenciação Textual", completed: false },
+                          { name: "Tempos e Modos Verbais", completed: false }
+                      ]
+                    },
+                    { title: "Reescrita de Textos", detail: "Significação de palavras, substituições, reorganização estrutural e adequação de gênero e formalidade.", application: "A reescrita é a aplicação prática de todas as suas habilidades em interpretação e gramática, fundamental para adaptar e resumir informações.",
+                      subtopics: [
+                          { name: "Significação de Palavras", completed: false },
+                          { name: "Substituições", completed: false },
+                          { name: "Reorganização Estrutural", completed: false },
+                          { name: "Adequação de Gênero e Formalidade", completed: false }
+                      ]
+                    },
+                    { title: "Correspondência Oficial (Manual da PR)", detail: "Aspectos gerais, finalidade, linguagem apropriada e formatação textual da comunicação oficial.", application: "Uma aplicação específica das regras de português em um contexto formal e profissional, vital para a PF.",
+                      subtopics: [
+                          { name: "Aspectos Gerais", completed: false },
+                          { name: "Finalidade", completed: false },
+                          { name: "Linguagem Apropriada", completed: false },
+                          { name: "Formatação Textual", completed: false }
+                      ]
+                    }
+                ]
+            },
+            raciocinio: {
+                name: "Raciocínio Lógico",
+                icon: "🔢",
+                chartData: {
+                    labels: ['Lógica Sentencial', 'Lógica de Argumentação', 'Análise Combinatória', 'Probabilidade', 'Raciocínio Aritmético'],
+                    data: [25, 25, 15, 15, 20],
+                },
+                topics: [
+                    { title: "Lógica Sentencial (ou Proposicional)", detail: "Entender o conceito de proposição, os conectivos lógicos, tabelas-verdade, equivalências e negações é o alicerce para a análise de argumentos complexos.", application: "Base para a análise de evidências e construção de linhas de investigação coerentes, avaliando a veracidade de declarações e fatos.",
+                      subtopics: [
+                          { name: "Estruturas Lógicas", completed: false },
+                          { name: "Proposições (Simples e Compostas)", completed: false },
+                          { name: "Conectivos Lógicos (e, ou, se... então, se e somente se, não)", completed: false },
+                          { name: "Tabelas Verdade", completed: false },
+                          { name: "Leis de De Morgan", completed: false },
+                          { name: "Equivalências Lógicas", completed: false },
+                          { name: "Negação de Proposições", completed: false }
+                      ]
+                    },
+                    { title: "Lógica de Argumentação e Conjuntos", detail: "Habilidade de identificar premissas e conclusão em um argumento, analisar sua validade, usar diagramas lógicos e operações com conjuntos para resolver problemas.", application: "Ajuda a identificar contradições e inconsistências em depoimentos ou álibis, confrontando diferentes versões de um mesmo fato, e organizar informações.",
+                      subtopics: [
+                          { name: "Lógica de Argumentação", completed: false },
+                          { name: "Diagramas Lógicos", completed: false },
+                          { name: "Associação de Informações", completed: false },
+                          { name: "Argumentos (Análise de Validade)", completed: false },
+                          { name: "Operações c/ Conjuntos", completed: false }
+                      ]
+                    },
+                    { title: "Princípios de Contagem (Análise Combinatória)", detail: "Compreender os Princípios Multiplicativo e Aditivo, e saber diferenciar e aplicar Permutações, Combinações e Arranjos para contar possibilidades.", application: "Útil em investigações que envolvem a análise de um grande número de possibilidades, como quebra de senhas, cruzamento de dados ou padrões criminais.",
+                      subtopics: [
+                          { name: "Princípios de Contagem (Análise Combinatória)", completed: false }
+                      ]
+                    },
+                    { title: "Probabilidade", detail: "Entender o conceito de experimento aleatório, espaço amostral e evento, e saber calcular a probabilidade de eventos simples e compostos, incluindo probabilidade condicional.", application: "Aplicada na avaliação da força de uma evidência e na análise de risco para prever a ocorrência de crimes com base em padrões estatísticos.",
+                      subtopics: [
+                          { name: "Probabilidade", completed: false }
+                      ]
+                    },
+                    { title: "Raciocínio Lógico-Aritmético", detail: "Problemas que envolvem operações com números reais, MMC, MDC, razão, proporção, regra de três, equações e unidades de medidas.", application: "Essencial para a análise de dados quantitativos em investigações financeiras, perícias e para compreender escalas e conversões.",
+                      subtopics: [
+                          { name: "Unidades de Medidas", completed: false },
+                          { name: "Operações c/ Números Reais", completed: false },
+                          { name: "MMC e MDC", completed: false },
+                          { name: "Razão", completed: false },
+                          { name: "Proporção e Regra de Três", completed: false },
+                          { name: "Equações", completed: false }
+                      ]
+                    }
+                ]
+            },
+            contabilidade: {
+                name: "Contabilidade Geral",
+                icon: "📒",
+                chartData: {
+                    labels: ['Conceitos e Patrimônio', 'Atos e Fatos', 'Contas e Escrituração', 'Demonstrações', 'Legislação Contábil'],
+                    data: [15, 10, 25, 30, 20],
+                },
+                topics: [
+                    { title: "Conceitos e Patrimônio", detail: "A base da contabilidade, compreendendo o que é patrimônio, seus componentes (bens, direitos e obrigações) e a equação fundamental.", application: "A fundação para qualquer análise financeira, crucial para o rastreamento de bens e a compreensão da estrutura patrimonial em investigações de lavagem de dinheiro.",
+                      subtopics: [
+                          { name: "Conceitos, objetivos e finalidades da contabilidade", completed: false },
+                          { name: "Patrimônio: componentes", completed: false },
+                          { name: "Equação fundamental do patrimônio", completed: false },
+                          { name: "Situação líquida", completed: false },
+                          { name: "Representação gráfica do patrimônio", completed: false }
+                      ]
+                    },
+                    { title: "Atos e Fatos Administrativos", detail: "Diferenciação entre atos que não alteram o patrimônio e fatos contábeis (permutativos, modificativos e mistos) que geram registros.", application: "Essencial para identificar a origem e o impacto das operações financeiras, fundamental para reconstruir o fluxo de recursos em investigações.",
+                      subtopics: [
+                          { name: "Atos e fatos administrativos: conceitos", completed: false },
+                          { name: "Fatos permutativos", completed: false },
+                          { name: "Fatos modificativos", completed: false },
+                          { name: "Fatos mistos", completed: false }
+                      ]
+                    },
+                    { title: "Contas e Escrituração", detail: "Conceitos de contas (débitos, créditos, saldos), plano de contas, e os métodos e livros de escrituração (lançamentos, regime de competência e caixa).", application: "Fundamental para verificar a regularidade dos registros e identificar lançamentos falsos ou suspeitos que sirvam como prova material de um crime financeiro.",
+                      subtopics: [
+                          { name: "Contas: conceitos, contas de débitos, contas de créditos e saldos", completed: false },
+                          { name: "Plano de contas: conceitos, elenco de contas, função e funcionamento das contas", completed: false },
+                          { name: "Escrituração: conceitos", completed: false },
+                          { name: "Lançamentos contábeis, elementos essenciais, fórmulas de lançamentos", completed: false },
+                          { name: "Métodos e processos de escrituração", completed: false },
+                          { name: "Livros de escrituração", completed: false },
+                          { name: "Regime de competência e regime de caixa", completed: false },
+                          { name: "Contabilização de operações contábeis diversas: depreciações e baixa de bens", completed: false },
+                          { name: "Contabilização de operações contábeis diversas: folha de pagamento", completed: false }
+                      ]
+                    },
+                    { title: "Demonstrações Contábeis", detail: "Estudo aprofundado do Balanço Patrimonial (Ativo Circulante, Não Circulante, Imobilizado, Passivo, Patrimônio Líquido) e da Demonstração de Resultado do Exercício (DRE).", application: "Essencial para identificar fraudes, desvios e lavagem de dinheiro, pois as demonstrações são o 'raio-x' da saúde financeira de uma empresa investigada.",
+                      subtopics: [
+                          { name: "Balancete de verificação: conceitos, modelos e técnicas de elaboração", completed: false },
+                          { name: "Balanço patrimonial: conceitos, objetivo, composição", completed: false },
+                          { name: "Ativo Circulante e Ativo Não Circulante", completed: false },
+                          { name: "Ativo Imobilizado", completed: false },
+                          { name: "Passivo", completed: false },
+                          { name: "Patrimônio Líquido", completed: false },
+                          { name: "Demonstração de Resultado do Exercício: conceito, objetivo, composição", completed: false }
+                      ]
+                    },
+                    { title: "Legislação Contábil", detail: "Análise da Lei nº 6.404/1976 e suas alterações, legislação complementar, pronunciamentos do CPC (ex: CPC 01, CPC 04, CPC 25) e Notas Explicativas.", application: "Crucial para aplicar as normas contábeis em perícias e investigações, garantindo a conformidade legal e a validade das provas.",
+                      subtopics: [
+                          { name: "Lei nº 6.404/1976 e suas alterações", completed: false },
+                          { name: "Legislação complementar", completed: false },
+                          { name: "Pronunciamentos do Comitê de Pronunciamentos Contábeis (CPC)", completed: false },
+                          { name: "Notas Explicativas", completed: false },
+                          { name: "CPC 01 (R1) - Redução ao Valor Recuperável de Ativos", completed: false },
+                          { name: "CPC 04 (R1) - Ativo Intangível", completed: false },
+                          { name: "CPC 25 - Provisões, Passivos Contingentes e Ativos Contingentes", completed: false }
+                      ]
+                    }
+                ]
+            },
+            informatica: {
+                name: "Informática",
+                icon: "🖥️",
+                chartData: {
+                    labels: ['Redes e Protocolos', 'Segurança da Informação', 'Banco de Dados', 'Programação e BI', 'Computação na Nuvem', 'Ferramentas e Apps'],
+                    data: [25, 20, 18, 15, 12, 10],
+                },
+                topics: [
+                    { title: "Redes e Protocolos", detail: "Conceitos de redes (LAN, MAN, WAN, sem fio), arquitetura (OSI/TCP-IP), endereçamento (IPv4/IPv6) e funcionamento dos principais protocolos (HTTP, FTP, SMTP, DNS, SSL/TLS).", application: "Indispensável para rastrear a origem de ataques cibernéticos, analisar o tráfego de rede de suspeitos e entender como a comunicação ocorre na internet.",
+                      subtopics: [
+                          { name: "Redes de comunicação: Introdução a redes (computação/telecomunicações)", completed: false },
+                          { name: "Noções básicas de transmissão de dados: tipos de enlace, códigos, modos e meios de transmissão", completed: false },
+                          { name: "Redes de computadores: locais, metropolitanas e de longa distância", completed: false },
+                          { name: "Noções de arquitetura e princípios de funcionamento das redes", completed: false },
+                          { name: "Tipos de redes: locais (LAN), metropolitanas (MAN) e de longa distância (WAN)", completed: false },
+                          { name: "Redes sem fio: padrões IEEE 802.11, WPA/WPA2, segurança e boas práticas", completed: false },
+                          { name: "Terminologia e aplicações, topologias, modelos de arquitetura (OSI/ISO e TCP/IP) e protocolos", completed: false },
+                          { name: "Interconexão de redes, nível de transporte", completed: false },
+                          { name: "Formação de endereços IPV4 e IPV6", completed: false },
+                          { name: "Modelo OSI/ISO e modelo TCP/IP: camadas, funções e protocolos associados", completed: false },
+                          { name: "Protocolos de comunicação: Ethernet, TCP, UDP, DNS, DHCP e SNMP", completed: false },
+                          { name: "SSL/TLS", completed: false },
+                          { name: "Camada física, de enlace de dados e subcamada de acesso ao meio", completed: false },
+                          { name: "Conceito de internet e intranet", completed: false },
+                          { name: "Protocolos e mecanismos de segurança: VPN", completed: false }
+                      ]
+                    },
+                    { title: "Segurança da Informação", detail: "Noções de criptografia (hash, assinaturas digitais), autenticação (MFA), controle de acesso, ameaças (malware, phishing, ransomware) e testes de acurácia (NIST.GOV, FPIR, FNIR).", application: "É a base do combate ao cibercrime e da proteção de dados sigilosos da própria investigação, garantindo a integridade das evidências digitais.",
+                      subtopics: [
+                          { name: "Conceitos de proteção e segurança", completed: false },
+                          { name: "Noções de criptografia e proteção de dados: hash criptográfico (MD5, SHA-1, SHA-256)", completed: false },
+                          { name: "Assinaturas digitais", completed: false },
+                          { name: "Autenticação multifator (MFA)", completed: false },
+                          { name: "Noções de Controle de acesso e autenticação", completed: false },
+                          { name: "Testes de acurácia do NIST.GOV", completed: false },
+                          { name: "Conceitos de falso positivo e falso negativo (FPIR e FNIR)", completed: false }
+                      ]
+                    },
+                    { title: "Banco de Dados", detail: "Modelagem conceitual (entidade-relacionamento), bancos de dados relacionais (chaves, relacionamentos) e noções de linguagem SQL.", application: "Essencial para analisar grandes volumes de dados de quebras de sigilo (telefônico, bancário), identificar conexões e encontrar a 'agulha no palheiro'.",
+                      subtopics: [
+                          { name: "Modelagem conceitual: abstração, modelo entidade-relacionamento, análise funcional e administração de dados", completed: false },
+                          { name: "Entidades, atributos e relacionamentos", completed: false },
+                          { name: "Banco de dados relacionais: conceitos básicos e características", completed: false },
+                          { name: "Chaves e relacionamentos", completed: false },
+                          { name: "Noções de linguagem SQL", completed: false }
+                      ]
+                    },
+                    { title: "Programação e Business Intelligence", detail: "Noções de programação (Python, R), conceito de API, e Business Intelligence (ferramentas, ETL/ELT, Data Warehouse, Data Mart, Data Lake, Data Mesh).", application: "Permite a análise de códigos maliciosos, o desenvolvimento de ferramentas para investigações e a automação da análise de grandes volumes de dados.",
+                      subtopics: [
+                          { name: "Noções de Business Intelligence: Ferramentas e aplicabilidade", completed: false },
+                          { name: "ETL/ELT (Extract, Transform, Load)", completed: false },
+                          { name: "Conceito de DataWarehouse", completed: false },
+                          { name: "Conceito de DataMart", completed: false },
+                          { name: "Conceito de DataLake", completed: false },
+                          { name: "Conceito de DataMesh", completed: false },
+                          { name: "Noções de Programação e Interoperabilidade", completed: false },
+                          { name: "Noções de programação em Python", completed: false },
+                          { name: "Conceito de API (Application Programming Interface)", completed: false },
+                          { name: "Noções de programação R", completed: false }
+                      ]
+                    },
+                    { title: "Computação na Nuvem", detail: "Definição e características das nuvens (privadas e públicas) e modelos de serviço (IaaS, PaaS, SaaS).", application: "Relevante pois muitos criminosos usam serviços em nuvem para armazenar dados e coordenar atividades ilícitas, exigindo conhecimento para perícia nesse ambiente.",
+                      subtopics: [
+                          { name: "Noções de Computação em Nuvem", completed: false },
+                          { name: "Definição e características das nuvens privadas e públicas", completed: false },
+                          { name: "Modelos de Serviço em Nuvem: Infraestrutura como Serviço (IaaS), Plataforma como Serviço (PaaS) e Software como Serviço (SaaS)", completed: false }
+                      ]
+                    },
+                    { title: "Ferramentas e Aplicativos", detail: "Ferramentas comerciais de navegação, correio eletrônico, grupos de discussão, busca e pesquisa, áudio/vídeo/multimídia, acesso à distância e transferência de arquivos.", application: "Conhecimento operacional de ferramentas digitais para coleta, análise e gerenciamento de informações durante investigações.",
+                      subtopics: [
+                          { name: "Ferramentas e aplicativos comerciais de navegação", completed: false },
+                          { name: "Ferramentas e aplicativos comerciais de Correio eletrônico", completed: false },
+                          { name: "Grupos de discussão", completed: false },
+                          { name: "Ferramentas e aplicativos comerciais de busca e pesquisa", completed: false },
+                          { name: "Aplicativos de áudio, vídeo e multimídia", completed: false },
+                          { name: "Acesso à distância a computadores, transferência de informação e arquivos", completed: false }
+                      ]
+                    }
+                ]
+            },
+            raciocinio: {
+                name: "Raciocínio Lógico",
+                icon: "🔢",
+                chartData: {
+                    labels: ['Lógica Sentencial', 'Lógica de Argumentação', 'Análise Combinatória', 'Probabilidade', 'Raciocínio Aritmético'],
+                    data: [25, 25, 15, 15, 20],
+                },
+                topics: [
+                    { title: "Lógica Sentencial (ou Proposicional)", detail: "Entender o conceito de proposição, os conectivos lógicos, tabelas-verdade, equivalências e negações é o alicerce para a análise de argumentos complexos.", application: "Base para a análise de evidências e construção de linhas de investigação coerentes, avaliando a veracidade de declarações e fatos.",
+                      subtopics: [
+                          { name: "Estruturas Lógicas", completed: false },
+                          { name: "Proposições (Simples e Compostas)", completed: false },
+                          { name: "Conectivos Lógicos (e, ou, se... então, se e somente se, não)", completed: false },
+                          { name: "Tabelas Verdade", completed: false },
+                          { name: "Leis de De Morgan", completed: false },
+                          { name: "Equivalências Lógicas", completed: false },
+                          { name: "Negação de Proposições", completed: false }
+                      ]
+                    },
+                    { title: "Lógica de Argumentação e Conjuntos", detail: "Habilidade de identificar premissas e conclusão em um argumento, analisar sua validade, usar diagramas lógicos e operações com conjuntos para resolver problemas.", application: "Ajuda a identificar contradições e inconsistências em depoimentos ou álibis, confrontando diferentes versões de um mesmo fato, e organizar informações.",
+                      subtopics: [
+                          { name: "Lógica de Argumentação", completed: false },
+                          { name: "Diagramas Lógicos", completed: false },
+                          { name: "Associação de Informações", completed: false },
+                          { name: "Argumentos (Análise de Validade)", completed: false },
+                          { name: "Operações c/ Conjuntos", completed: false }
+                      ]
+                    },
+                    { title: "Princípios de Contagem (Análise Combinatória)", detail: "Compreender os Princípios Multiplicativo e Aditivo, e saber diferenciar e aplicar Permutações, Combinações e Arranjos para contar possibilidades.", application: "Útil em investigações que envolvem a análise de um grande número de possibilidades, como quebra de senhas, cruzamento de dados ou padrões criminais.",
+                      subtopics: [
+                          { name: "Princípios de Contagem (Análise Combinatória)", completed: false }
+                      ]
+                    },
+                    { title: "Probabilidade", detail: "Entender o conceito de experimento aleatório, espaço amostral e evento, e saber calcular a probabilidade de eventos simples e compostos, incluindo probabilidade condicional.", application: "Aplicada na avaliação da força de uma evidência e na análise de risco para prever a ocorrência de crimes com base em padrões estatísticos.",
+                      subtopics: [
+                          { name: "Probabilidade", completed: false }
+                      ]
+                    },
+                    { title: "Raciocínio Lógico-Aritmético", detail: "Problemas que envolvem operações com números reais, MMC, MDC, razão, proporção, regra de três, equações e unidades de medidas.", application: "Essencial para a análise de dados quantitativos em investigações financeiras, perícias e para compreender escalas e conversões.",
+                      subtopics: [
+                          { name: "Unidades de Medidas", completed: false },
+                          { name: "Operações c/ Números Reais", completed: false },
+                          { name: "MMC e MDC", completed: false },
+                          { name: "Razão", completed: false },
+                          { name: "Proporção e Regra de Três", completed: false },
+                          { name: "Equações", completed: false }
+                      ]
+                    }
+                ]
+            }
+        },
+        methodologies: [
+            {
+                icon: '❓',
+                title: 'Estudo Ativo por Questões',
+                description: 'Resolver provas anteriores do CEBRASPE é o método mais eficaz. Ajuda a entender o estilo da banca, aplicar a teoria e, principalmente, aprender com os erros. Pratique em plataformas como o <a href="https://www.qconcursos.com/questoes-de-concursos/questoes" target="_blank" class="text-teal-700 underline hover:text-teal-900">Qconcursos</a>.',
+                color: 'teal'
+            },
+            {
+                icon: '🧠',
+                title: 'Mnemônicos e Mapas Mentais',
+                description: 'Crie ou use mnemônicos (ex: LIMPE) e mapas visuais para memorizar regras e leis. Eles transformam informações densas em gatilhos de memória rápidos.',
+                color: 'sky'
+            },
+            {
+                icon: '🔄',
+                title: 'Revisão Periódica',
+                description: 'O cérebro esquece. Crie um ciclo de revisões (24h, 7 dias, 30 dias) para transferir o conhecimento da memória de curto prazo para a de longo prazo. Revisar é tão importante quanto aprender.',
+                color: 'amber'
+            }
+        ],
+        resources: [
+            {
+                icon: '💻',
+                title: 'Plataformas de Questões',
+                items: ['Qconcursos', 'Tecconcursos'],
+                description: 'Essenciais para a prática massiva e filtragem por banca, assunto e ano.',
+                color: 'indigo'
+            },
+            {
+                icon: '🎓',
+                title: 'Cursos Preparatórios',
+                items: ['Gran Cursos Online', 'Estratégia Concursos'],
+                description: 'Oferecem material direcionado, videoaulas e PDFs focados no edital da PF.',
+                color: 'rose'
+            },
+            {
+                icon: '📖',
+                title: 'Livros Especializados',
+                items: ['Editora Juspodivm'],
+                description: 'Fornecem aprofundamento teórico em disciplinas-chave com autores renomeados.',
+                color: 'emerald'
+            },
+             {
+                icon: '🗺️',
+                title: 'Mapas Mentais',
+                items: ['Mapas da Lulu'],
+                description: 'Recurso visual para revisões rápidas e consolidação do conteúdo.',
+                color: 'violet'
+            },
+        ]
+    };
+
+    let currentChart = null;
+
+    function saveProgress() {
+        localStorage.setItem('pfStudyProgress', JSON.stringify(studyData.subjects));
+    }
+
+    function loadProgress() {
+        const savedProgress = localStorage.getItem('pfStudyProgress');
+        if (savedProgress) {
+            const loadedSubjects = JSON.parse(savedProgress);
+            for (const subjectKey in studyData.subjects) {
+                if (loadedSubjects[subjectKey]) {
+                    studyData.subjects[subjectKey].topics.forEach((topic, topicIndex) => {
+                        if (loadedSubjects[subjectKey].topics[topicIndex]) {
+                            topic.subtopics.forEach((subtopic, subtopicIndex) => {
+                                if (loadedSubjects[subjectKey].topics[topicIndex].subtopics[subtopicIndex] !== undefined) {
+                                    subtopic.completed = loadedSubjects[subjectKey].topics[topicIndex].subtopics[subtopicIndex].completed;
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    function getTotalSubtopics() {
+        let total = 0;
+        for (const subjectKey in studyData.subjects) {
+            studyData.subjects[subjectKey].topics.forEach(topic => {
+                if (topic.subtopics) {
+                    total += topic.subtopics.length;
+                }
+            });
+        }
+        return total;
+    }
+
+    function getCompletedSubtopics() {
+        let completed = 0;
+        for (const subjectKey in studyData.subjects) {
+            studyData.subjects[subjectKey].topics.forEach(topic => {
+                if (topic.subtopics) {
+                    topic.subtopics.forEach(subtopic => {
+                        if (subtopic.completed) {
+                            completed++;
+                        }
+                    });
+                }
+            });
+        }
+        return completed;
+    }
+
+    function updateProgressBar() {
+        const total = getTotalSubtopics();
+        const completed = getCompletedSubtopics();
+        const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+        const progressBar = document.getElementById('overall-progress-bar');
+        const progressText = document.getElementById('overall-progress-text');
+
+        if (progressBar && progressText) {
+            progressBar.style.width = `${percentage}%`;
+            progressText.innerText = `${percentage}%`;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const navLinks = document.querySelectorAll('#main-nav a');
+        const contentSections = document.querySelectorAll('.content-section');
+        const subjectButtonsContainer = document.getElementById('subject-buttons');
+        const topicDetailsContainer = document.getElementById('topic-details');
+        
+        function navigateTo(hash) {
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === hash);
+            });
+            contentSections.forEach(section => {
+                section.classList.toggle('active', `#${section.id}` === hash);
+            });
+        }
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const hash = link.getAttribute('href');
+                navigateTo(hash);
+                window.location.hash = hash;
+            });
+        });
+
+        function populateMethodologies() {
+            const container = document.getElementById('methodologies-container');
+            const colors = {
+                teal: 'border-teal-500 bg-teal-50 text-teal-900',
+                sky: 'border-sky-500 bg-sky-50 text-sky-900',
+                amber: 'border-amber-500 bg-amber-50 text-amber-900',
+            };
+            // HTML for methodologies is now hardcoded directly in the section
+            // based on user's previous input to remove dynamic insertion.
+            // This function might be removed if no longer populating dynamically.
+        }
+
+        function populateResources() {
+            const container = document.getElementById('resources-container');
+             const colors = {
+                indigo: 'border-indigo-500 bg-indigo-50 text-indigo-900',
+                rose: 'border-rose-500 bg-rose-50 text-rose-900',
+                emerald: 'border-emerald-500 bg-emerald-50 text-emerald-900',
+                violet: 'border-violet-500 bg-violet-50 text-violet-900',
+            };
+            let html = '';
+            studyData.resources.forEach(res => {
+                html += `
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 ${colors[res.color]}">
+                    <span class="text-4xl">${res.icon}</span>
+                    <h3 class="text-xl font-bold mt-4">${res.title}</h3>
+                    <p class="text-stone-600 mt-2 text-sm">${res.description}</p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        ${res.items.map(item => `<span class="bg-stone-200 text-stone-700 text-xs font-semibold px-2 py-1 rounded-full">${item}</span>`).join('')}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function displayTopicDetails(subjectKey, topicIndex) {
+            const subject = studyData.subjects[subjectKey];
+            const allTopics = subject.topics;
+            let topicDetailsHtml = '';
+
+            allTopics.forEach((t, index) => {
+                const isOpen = index === topicIndex;
+                topicDetailsHtml += `
+                    <div class="bg-white rounded-xl shadow-md border border-stone-200 overflow-hidden">
+                        <button class="w-full text-left p-4 flex justify-between items-center font-semibold text-lg text-teal-800" onclick="toggleAccordion(this, '${subjectKey}', ${index})">
+                            <span>${t.title}</span>
+                            <span class="transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}">▼</span>
+                        </button>
+                        <div class="accordion-content px-4 pb-4" style="${isOpen ? 'max-height: 500px;' : ''}">
+                            <p class="text-stone-600 mb-3">${t.detail}</p>
+                            <div class="bg-teal-50 border-l-4 border-teal-400 p-3 rounded mb-4">
+                                <h4 class="font-semibold text-teal-900">Aplicação Prática na PF:</h4>
+                                <p class="text-sm text-teal-800 mt-1">${t.application}</p>
+                            </div>
+                            ${t.subtopics && t.subtopics.length > 0 ? `
+                                <h4 class="font-semibold text-teal-800 mb-2">Subtópicos:</h4>
+                                <ul class="list-none space-y-2">
+                                    ${t.subtopics.map((sub, subIndex) => `
+                                        <li class="flex items-center">
+                                            <input type="checkbox" id="subtopic-${subjectKey}-${index}-${subIndex}" data-subject-key="${subjectKey}" data-topic-index="${index}" data-subtopic-index="${subIndex}" ${sub.completed ? 'checked' : ''} class="mr-2 h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 subtopic-checkbox">
+                                            <label for="subtopic-${subjectKey}-${index}-${subIndex}" class="text-stone-700">
+                                                ${sub.name}
+                                            </label>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            topicDetailsContainer.innerHTML = topicDetailsHtml;
+
+            document.querySelectorAll('.subtopic-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', handleSubtopicCheck);
+                const label = checkbox.nextElementSibling;
+                if (checkbox.checked) {
+                    label.classList.add('line-through', 'text-gray-500');
+                } else {
+                    label.classList.remove('line-through', 'text-gray-500');
+                }
+            });
+        }
+        
+        window.toggleAccordion = (button, subjectKey, topicIndex) => {
+            const content = button.nextElementSibling;
+            const allContents = document.querySelectorAll('#topic-details .accordion-content');
+            const allButtons = document.querySelectorAll('#topic-details button');
+
+            allContents.forEach((c, i) => {
+                const btn = allButtons[i];
+                if (c !== content && c.style.maxHeight !== '0px') {
+                    c.style.maxHeight = '0px';
+                    btn.querySelector('span:last-child').classList.remove('rotate-180');
+                }
+            });
+
+            if (content.style.maxHeight === '0px' || !content.style.maxHeight) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                 button.querySelector('span:last-child').classList.add('rotate-180');
+            } else {
+                content.style.maxHeight = '0px';
+                button.querySelector('span:last-child').classList.remove('rotate-180');
+            }
+        };
+
+        function handleSubtopicCheck(event) {
+            const checkbox = event.target;
+            const subjectKey = checkbox.dataset.subjectKey;
+            const topicIndex = parseInt(checkbox.dataset.topicIndex);
+            const subtopicIndex = parseInt(checkbox.dataset.subtopicIndex);
+
+            if (studyData.subjects[subjectKey] &&
+                studyData.subjects[subjectKey].topics[topicIndex] &&
+                studyData.subjects[subjectKey].topics[topicIndex].subtopics[subtopicIndex]) {
+                
+                studyData.subjects[subjectKey].topics[topicIndex].subtopics[subtopicIndex].completed = checkbox.checked;
+                const label = checkbox.nextElementSibling;
+                if (checkbox.checked) {
+                    label.classList.add('line-through', 'text-gray-500');
+                } else {
+                    label.classList.remove('line-through', 'text-gray-500');
+                }
+                saveProgress();
+                updateProgressBar();
+            }
+        }
+
+        function renderChart(subjectKey) {
+            const subject = studyData.subjects[subjectKey];
+            const ctx = document.getElementById('topicsChart').getContext('2d');
+            
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            document.getElementById('chart-title').innerText = `Tópicos Mais Cobrados: ${subject.name}`;
+
+            currentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: subject.chartData.labels,
+                    datasets: [{
+                        label: '% de Incidência (CEBRASPE)',
+                        data: subject.chartData.data,
+                        backgroundColor: 'rgba(13, 148, 136, 0.7)',
+                        borderColor: 'rgba(15, 118, 110, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%'
+                                }
+                            }
+                        },
+                        y: {
+                           ticks: {
+                                autoSkip: false
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const chartElement = elements[0];
+                            const index = chartElement.index;
+                            displayTopicDetails(subjectKey, index);
+                        }
+                    }
+                }
+            });
+            displayTopicDetails(subjectKey, 0); 
+        }
+
+        Object.keys(studyData.subjects).forEach(key => {
+            const subject = studyData.subjects[key];
+            const button = document.createElement('button');
+            button.className = 'subject-button px-4 py-2 text-sm font-semibold text-teal-700 bg-white border-2 border-teal-600 rounded-full hover:bg-teal-50 transition-colors';
+            button.innerHTML = `${subject.icon} ${subject.name}`;
+            button.dataset.subject = key;
+            subjectButtonsContainer.appendChild(button);
+
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.subject-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                renderChart(key);
+            });
+        });
+
+        loadProgress(); // Carrega o progresso salvo
+        const initialHash = window.location.hash || '#inicio';
+        navigateTo(initialHash);
+        updateProgressBar(); // Atualiza a barra de progresso após carregar
+
+        // populateMethodologies(); // Removed as HTML is now hardcoded for this section
+        populateResources();
+        
+        const firstSubjectKey = Object.keys(studyData.subjects)[0];
+        document.querySelector(`.subject-button[data-subject="${firstSubjectKey}"]`).click();
+
+    });
+</script>
+</body>
+</html>
