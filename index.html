@@ -54,13 +54,38 @@
             overflow: hidden;
             transition: max-height 0.5s ease-in-out;
         }
+        /* Ajuste para alinhar a checkbox e o label */
+        .subtopic-item {
+            display: flex;
+            align-items: center; /* Alinha verticalmente */
+        }
+        .subtopic-checkbox {
+            margin-right: 0.5rem; /* Espaçamento entre checkbox e label */
+            flex-shrink: 0; /* Impede que a checkbox encolha */
+        }
         .subtopic-checkbox:checked + label {
             text-decoration: line-through;
             color: #888;
         }
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            font-size: 1.5rem;
+            color: #0f766e;
+        }
     </style>
 </head>
 <body class="antialiased">
+
+    <div id="loading-overlay">Carregando progresso...</div>
 
     <div class="flex flex-col md:flex-row min-h-screen">
         <!-- Sidebar Navigation -->
@@ -237,7 +262,30 @@
         </main>
     </div>
 
-<script>
+<script type="module">
+    // Firebase SDK Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Global Firebase instances and user ID
+    let app, db, auth, userId;
+    let isAuthReady = false;
+
+    // Firebase configuration provided by the user
+    const firebaseConfig = {
+      apiKey: "AIzaSyCm9-J3pJOZHyYkSouKqXJ7AjU_KTS_Lj8",
+      authDomain: "guiaestudospf.firebaseapp.com",
+      projectId: "guiaestudospf",
+      storageBucket: "guiaestudospf.firebasestorage.app",
+      messagingSenderId: "25016477305",
+      appId: "1:25016477305:web:29569181e14d0bb2df56a8"
+    };
+    // Using projectId for appId for consistency with Firestore document paths
+    const appId = firebaseConfig.projectId;
+    const initialAuthToken = null; // Mantenha como null para autenticação anônima
+
+    // Default study data (initial state if no saved data is found)
     let studyData = {
         subjects: {
             portugues: {
@@ -618,28 +666,68 @@
 
     let currentChart = null;
 
-    function saveProgress() {
-        localStorage.setItem('pfStudyProgress', JSON.stringify(studyData.subjects));
+    // Function to save progress to Firestore
+    async function saveProgress() {
+        if (!db || !userId) {
+            console.error("Firestore ou User ID não inicializados. Não foi possível salvar.");
+            return;
+        }
+        try {
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/pf_study_data/progress`);
+            // Convertendo para JSON string para evitar problemas de serialização do Firestore com objetos aninhados profundos
+            await setDoc(userDocRef, { subjects: JSON.stringify(studyData.subjects) });
+            console.log("Progresso salvo com sucesso!");
+        } catch (e) {
+            console.error("Erro ao salvar progresso: ", e);
+        }
     }
 
-    function loadProgress() {
-        const savedProgress = localStorage.getItem('pfStudyProgress');
-        if (savedProgress) {
-            const loadedSubjects = JSON.parse(savedProgress);
-            for (const subjectKey in studyData.subjects) {
-                if (loadedSubjects[subjectKey]) {
-                    studyData.subjects[subjectKey].topics.forEach((topic, topicIndex) => {
-                        if (loadedSubjects[subjectKey].topics[topicIndex]) {
-                            topic.subtopics.forEach((subtopic, subtopicIndex) => {
-                                if (loadedSubjects[subjectKey].topics[topicIndex].subtopics[subtopicIndex] !== undefined) {
-                                    subtopic.completed = loadedSubjects[subjectKey].topics[topicIndex].subtopics[subtopicIndex].completed;
+    // Function to load progress from Firestore
+    async function loadProgress() {
+        return new Promise(resolve => {
+            if (!db || !userId) {
+                console.warn("Firestore ou User ID não inicializados. Tentando novamente em breve.");
+                resolve();
+                return;
+            }
+
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/pf_study_data/progress`);
+            onSnapshot(userDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const loadedData = docSnap.data();
+                    if (loadedData && loadedData.subjects) {
+                        try {
+                            const loadedSubjects = JSON.parse(loadedData.subjects); // Parse back from JSON string
+                            // Deep merge the loaded data with the default studyData
+                            for (const subjectKey in studyData.subjects) {
+                                if (loadedSubjects[subjectKey]) {
+                                    studyData.subjects[subjectKey].topics.forEach((topic, topicIndex) => {
+                                        if (loadedSubjects[subjectKey].topics[topicIndex]) {
+                                            topic.subtopics.forEach((subtopic, subtopicIndex) => {
+                                                if (loadedSubjects[subjectKey].topics[topicIndex].subtopics[subtopicIndex] !== undefined) {
+                                                    subtopic.completed = loadedSubjects[subjectKey].topics[topicIndex].subtopics[subtopicIndex].completed;
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             });
+                            console.log("Progresso carregado com sucesso!");
+                        } catch (parseError) {
+                            console.error("Erro ao fazer parse do progresso salvo: ", parseError);
                         }
-                    });
+                    }
+                } else {
+                    console.log("Nenhum progresso salvo encontrado. Iniciando com dados padrão.");
+                    saveProgress(); // Save initial data if no progress exists
                 }
-            }
-        }
+                updateProgressBar(); // Ensure progress bar is updated after load
+                resolve();
+            }, (error) => {
+                console.error("Erro ao carregar progresso: ", error);
+                resolve(); // Resolve even on error to unblock UI
+            });
+        });
     }
 
     function getTotalSubtopics() {
@@ -684,7 +772,60 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.style.display = 'flex'; // Show loading overlay
+
+        // Initialize Firebase
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Authenticate user
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+            } else {
+                await signInAnonymously(auth);
+            }
+
+            // Set userId after authentication
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    isAuthReady = true;
+                    await loadProgress(); // Load data once authentication is ready
+                    
+                    // Initial rendering after data is loaded
+                    const initialHash = window.location.hash || '#inicio';
+                    navigateTo(initialHash);
+                    populateResources();
+                    const firstSubjectKey = Object.keys(studyData.subjects)[0];
+                    if (document.querySelector(`.subject-button[data-subject="${firstSubjectKey}"]`)) {
+                        document.querySelector(`.subject-button[data-subject="${firstSubjectKey}"]`).click();
+                    }
+                    loadingOverlay.style.display = 'none'; // Hide loading overlay
+                } else {
+                    // Fallback if authentication fails
+                    userId = crypto.randomUUID(); // Use a random ID for unauthenticated users
+                    isAuthReady = true;
+                    console.warn("Usuário não autenticado, usando ID anônimo. Progresso não será persistente em diferentes sessões/dispositivos.");
+                    loadingOverlay.style.display = 'none'; // Hide loading overlay even if not persisted
+                }
+            });
+
+        } catch (e) {
+            console.error("Erro na inicialização do Firebase ou autenticação: ", e);
+            loadingOverlay.style.display = 'none'; // Hide loading overlay on error
+            // Using a simple message box instead of alert() for better UX
+            const errorMessage = document.createElement('div');
+            errorMessage.textContent = "Erro ao carregar o aplicativo. Verifique sua conexão ou tente novamente.";
+            errorMessage.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background-color:rgba(255,0,0,0.8);color:white;padding:20px;border-radius:10px;z-index:1001;";
+            document.body.appendChild(errorMessage);
+            setTimeout(() => errorMessage.remove(), 5000); // Remove message after 5 seconds
+        }
+
+
         const navLinks = document.querySelectorAll('#main-nav a');
         const contentSections = document.querySelectorAll('.content-section');
         const subjectButtonsContainer = document.getElementById('subject-buttons');
@@ -708,17 +849,9 @@
             });
         });
 
-        function populateMethodologies() {
-            const container = document.getElementById('methodologies-container');
-            const colors = {
-                teal: 'border-teal-500 bg-teal-50 text-teal-900',
-                sky: 'border-sky-500 bg-sky-50 text-sky-900',
-                amber: 'border-amber-500 bg-amber-50 text-amber-900',
-            };
-            // HTML for methodologies is now hardcoded directly in the section
-            // based on user's previous input to remove dynamic insertion.
-            // This function might be removed if no longer populating dynamically.
-        }
+        // HTML for methodologies is now hardcoded directly in the section
+        // This function might be removed if no longer populating dynamically.
+        // function populateMethodologies() { /* ... */ }
 
         function populateResources() {
             const container = document.getElementById('resources-container');
@@ -756,7 +889,7 @@
                             <span>${t.title}</span>
                             <span class="transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}">▼</span>
                         </button>
-                        <div class="accordion-content px-4 pb-4" style="${isOpen ? 'max-height: 500px;' : ''}">
+                        <div class="accordion-content px-4 pb-4" style="${isOpen ? 'max-height: 9999px;' : ''}"> <!-- Changed max-height to a very large value -->
                             <p class="text-stone-600 mb-3">${t.detail}</p>
                             <div class="bg-teal-50 border-l-4 border-teal-400 p-3 rounded mb-4">
                                 <h4 class="font-semibold text-teal-900">Aplicação Prática na PF:</h4>
@@ -766,8 +899,8 @@
                                 <h4 class="font-semibold text-teal-800 mb-2">Subtópicos:</h4>
                                 <ul class="list-none space-y-2">
                                     ${t.subtopics.map((sub, subIndex) => `
-                                        <li class="flex items-center">
-                                            <input type="checkbox" id="subtopic-${subjectKey}-${index}-${subIndex}" data-subject-key="${subjectKey}" data-topic-index="${index}" data-subtopic-index="${subIndex}" ${sub.completed ? 'checked' : ''} class="mr-2 h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 subtopic-checkbox">
+                                        <li class="subtopic-item">
+                                            <input type="checkbox" id="subtopic-${subjectKey}-${index}-${subIndex}" data-subject-key="${subjectKey}" data-topic-index="${index}" data-subtopic-index="${subIndex}" ${sub.completed ? 'checked' : ''} class="subtopic-checkbox h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
                                             <label for="subtopic-${subjectKey}-${index}-${subIndex}" class="text-stone-700">
                                                 ${sub.name}
                                             </label>
@@ -806,7 +939,8 @@
             });
 
             if (content.style.maxHeight === '0px' || !content.style.maxHeight) {
-                content.style.maxHeight = content.scrollHeight + 'px';
+                // Set max-height to scrollHeight plus a buffer for padding/margin
+                content.style.maxHeight = content.scrollHeight + 30 + 'px'; // Add a small buffer
                  button.querySelector('span:last-child').classList.add('rotate-180');
             } else {
                 content.style.maxHeight = '0px';
@@ -916,18 +1050,15 @@
                 renderChart(key);
             });
         });
-
-        loadProgress(); // Carrega o progresso salvo
-        const initialHash = window.location.hash || '#inicio';
-        navigateTo(initialHash);
-        updateProgressBar(); // Atualiza a barra de progresso após carregar
-
-        // populateMethodologies(); // Removed as HTML is now hardcoded for this section
-        populateResources();
         
-        const firstSubjectKey = Object.keys(studyData.subjects)[0];
-        document.querySelector(`.subject-button[data-subject="${firstSubjectKey}"]`).click();
-
+        // Initial setup for the first subject button if auth is ready before DOMContentLoaded is finished.
+        // This might run before loadProgress completes, so data will be default until loadProgress resolves.
+        if (isAuthReady) {
+            const firstSubjectKey = Object.keys(studyData.subjects)[0];
+            if (document.querySelector(`.subject-button[data-subject="${firstSubjectKey}"]`)) {
+                document.querySelector(`.subject-button[data-subject="${firstSubjectKey}"]`).click();
+            }
+        }
     });
 </script>
 </body>
