@@ -9,15 +9,14 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1a1a2e; /* Dark background color */
-            color: #e0e0e0; /* Light text color */
+            background-color: #1a1a2e; /* Cor de fundo escura */
+            color: #e0e0e0; /* Cor do texto claro */
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        /* Removed .header styles as the header is being removed */
         .card {
             background-color: #16213e;
             border-radius: 10px;
@@ -33,7 +32,7 @@
             margin-top: 10px;
         }
         .progress-bar {
-            background-color: #e94560; /* Progress bar color */
+            background-color: #e94560; /* Cor da barra de progresso */
             height: 100%;
             width: 0%;
             border-radius: 5px;
@@ -60,9 +59,9 @@
         }
         .checkbox-item input[type="checkbox"] {
             margin-right: 10px;
-            min-width: 20px; /* Ensures the checkbox doesn't shrink too much */
-            min-height: 20px; /* Ensures the checkbox doesn't shrink too much */
-            accent-color: #e94560; /* Checkbox color */
+            min-width: 20px; /* Garante que o checkbox não diminua muito */
+            min-height: 20px; /* Garante que o checkbox não diminua muito */
+            accent-color: #e94560; /* Cor do checkbox */
         }
         .notes-textarea {
             width: 100%;
@@ -80,15 +79,27 @@
         h1, h2, h3 {
             color: #e0e0e0;
         }
+        .back-button {
+            background-color: #e94560; /* Cor do botão de voltar */
+            color: #1a1a2e;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+            display: inline-block; /* Para que o botão não ocupe a largura total */
+        }
+        .back-button:hover {
+            background-color: #d13a52;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Removed the header with site name and navigation buttons -->
-
         <!-- Página Inicial -->
         <div id="home" class="page">
-            <h1 class="text-2xl font-bold mb-4">ROAD TO PRF MARTINEZ</h1> <!-- Moved site title to home page -->
+            <h1 class="text-2xl font-bold mb-4">ROAD TO PRF MARTINEZ</h1> <!-- Título do site movido para a página inicial -->
             <div class="card">
                 <h2 class="text-xl font-semibold mb-4">Progresso Geral dos Estudos</h2>
                 <div class="progress-bar-container">
@@ -121,6 +132,7 @@
         <!-- Páginas de Matérias -->
         <div id="portugues" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Língua Portuguesa</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="portugues-progress-bar" class="progress-bar"></div>
@@ -235,6 +247,7 @@
 
         <div id="raciocinio" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Raciocínio Lógico-Matemático</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="raciocinio-progress-bar" class="progress-bar"></div>
@@ -349,6 +362,7 @@
 
         <div id="informatica" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Informática</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="informatica-progress-bar" class="progress-bar"></div>
@@ -415,6 +429,7 @@
 
         <div id="fisica" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Física</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="fisica-progress-bar" class="progress-bar"></div>
@@ -465,6 +480,7 @@
 
         <div id="etica" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Ética e Cidadania</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="etica-progress-bar" class="progress-bar"></div>
@@ -535,6 +551,7 @@
 
         <div id="geopolitica" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Geopolítica</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="geopolitica-progress-bar" class="progress-bar"></div>
@@ -589,6 +606,7 @@
 
         <div id="ingles" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Língua Estrangeira (Inglês ou Espanhol)</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="ingles-progress-bar" class="progress-bar"></div>
@@ -621,6 +639,7 @@
 
         <div id="legislacao-transito" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Legislação de Trânsito</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="legislacao-transito-progress-bar" class="progress-bar"></div>
@@ -647,6 +666,7 @@
 
         <div id="direito-administrativo" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direito Administrativo</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direito-administrativo-progress-bar" class="progress-bar"></div>
@@ -825,6 +845,7 @@
 
         <div id="direito-constitucional" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direito Constitucional</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direito-constitucional-progress-bar" class="progress-bar"></div>
@@ -951,6 +972,7 @@
 
         <div id="direito-penal" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direito Penal</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direito-penal-progress-bar" class="progress-bar"></div>
@@ -1081,6 +1103,7 @@
 
         <div id="direito-processual-penal" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direito Processual Penal</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direito-processual-penal-progress-bar" class="progress-bar"></div>
@@ -1171,6 +1194,7 @@
 
         <div id="legislacao-especial" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Legislação Especial</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="legislacao-especial-progress-bar" class="progress-bar"></div>
@@ -1233,6 +1257,7 @@
 
         <div id="direitos-humanos" class="page hidden">
             <div class="card">
+                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direitos Humanos</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direitos-humanos-progress-bar" class="progress-bar"></div>
@@ -1248,7 +1273,7 @@
                         <label for="dh-1-1">1.1 A Constituição Federal e os tratados internacionais de direitos humanos.</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="dh-2" name="dh-2">
+                        <input type="checkbox" id="dh-2" name="dh="dh-2">
                         <label for="dh-2">2 Declaração Universal dos Direitos Humanos.</label>
                     </div>
                     <div class="checkbox-item">
@@ -1264,10 +1289,10 @@
     </div>
 
     <script>
-        // Object to store the state of checkboxes and notes
+        // Objeto para armazenar o estado dos checkboxes e anotações
         let studyData = JSON.parse(localStorage.getItem('studyData')) || {};
 
-        // List of all subjects and their respective form IDs and topics
+        // Lista de todas as matérias e seus respectivos IDs de formulário e tópicos
         const subjects = {
             'portugues': [
                 'portugues-1', 'portugues-2', 'portugues-3', 'portugues-4', 'portugues-4-1', 'portugues-4-2',
@@ -1339,19 +1364,19 @@
             ]
         };
 
-        // Function to show the correct page and hide others
+        // Função para mostrar a página correta e esconder as outras
         function showPage(pageId) {
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => {
                 page.classList.add('hidden');
             });
             document.getElementById(pageId).classList.remove('hidden');
-            // Updates the URL to allow navigation with the browser's back/forward button
+            // Atualiza a URL para permitir navegação com o botão de voltar/avançar do navegador
             history.pushState({ page: pageId }, '', `#${pageId}`);
-            updateAllProgressBars(); // Updates progress bars when changing pages
+            updateAllProgressBars(); // Atualiza as barras de progresso ao mudar de página
         }
 
-        // Function to initialize the state of checkboxes and notes
+        // Função para inicializar o estado dos checkboxes e anotações
         function initializeStudyData() {
             for (const subject in subjects) {
                 if (!studyData[subject]) {
@@ -1363,34 +1388,34 @@
                     }
                 });
             }
-            saveStudyData(); // Saves the initial state if it doesn't exist
+            saveStudyData(); // Salva o estado inicial se não existir
         }
 
-        // Function to load the saved state
+        // Função para carregar o estado salvo
         function loadStudyData() {
             for (const subject in subjects) {
-                // Loads the state of checkboxes
+                // Carrega o estado dos checkboxes
                 subjects[subject].forEach(topicId => {
                     const checkbox = document.getElementById(topicId);
                     if (checkbox && studyData[subject] && studyData[subject].checkboxes[topicId] !== undefined) {
                         checkbox.checked = studyData[subject].checkboxes[topicId];
                     }
                 });
-                // Loads the notes
+                // Carrega as anotações
                 const notesTextarea = document.getElementById(`${subject}-notes`);
                 if (notesTextarea && studyData[subject] && studyData[subject].notes !== undefined) {
                     notesTextarea.value = studyData[subject].notes;
                 }
             }
-            updateAllProgressBars(); // Updates progress bars after loading data
+            updateAllProgressBars(); // Atualiza as barras de progresso após carregar os dados
         }
 
-        // Function to save the current state
+        // Função para salvar o estado atual
         function saveStudyData() {
             localStorage.setItem('studyData', JSON.stringify(studyData));
         }
 
-        // Function to update the progress bar for a specific subject
+        // Função para atualizar a barra de progresso de uma matéria específica
         function updateSubjectProgressBar(subject) {
             const totalTopics = subjects[subject].length;
             let completedTopics = 0;
@@ -1412,7 +1437,7 @@
                 progressText.textContent = `${percentage.toFixed(0)}% Concluído`;
             }
 
-            // Saves the state of checkboxes for the subject
+            // Salva o estado dos checkboxes para a matéria
             subjects[subject].forEach(topicId => {
                 const checkbox = document.getElementById(topicId);
                 if (checkbox) {
@@ -1422,7 +1447,7 @@
             saveStudyData();
         }
 
-        // Function to update the overall progress bar
+        // Função para atualizar a barra de progresso geral
         function updateOverallProgressBar() {
             let totalAllTopics = 0;
             let completedAllTopics = 0;
@@ -1449,7 +1474,7 @@
             }
         }
 
-        // Function to update all progress bars
+        // Função para atualizar todas as barras de progresso
         function updateAllProgressBars() {
             for (const subject in subjects) {
                 updateSubjectProgressBar(subject);
@@ -1457,13 +1482,13 @@
             updateOverallProgressBar();
         }
 
-        // Adds event listeners for checkboxes and textareas
+        // Adiciona event listeners para os checkboxes e textareas
         document.addEventListener('DOMContentLoaded', () => {
-            initializeStudyData(); // Ensures the data structure is ready
-            loadStudyData(); // Loads saved data
+            initializeStudyData(); // Garante que a estrutura de dados esteja pronta
+            loadStudyData(); // Carrega os dados salvos
 
             for (const subject in subjects) {
-                // Adds listener for checkboxes
+                // Adiciona listener para checkboxes
                 subjects[subject].forEach(topicId => {
                     const checkbox = document.getElementById(topicId);
                     if (checkbox) {
@@ -1474,7 +1499,7 @@
                     }
                 });
 
-                // Adds listener for notes textareas
+                // Adiciona listener para textareas de anotações
                 const notesTextarea = document.getElementById(`${subject}-notes`);
                 if (notesTextarea) {
                     notesTextarea.addEventListener('input', (event) => {
@@ -1484,7 +1509,7 @@
                 }
             }
 
-            // Handles initial navigation and browser back/forward button
+            // Lida com a navegação inicial e o botão de voltar/avançar do navegador
             const initialPage = window.location.hash.substring(1) || 'home';
             showPage(initialPage);
 
