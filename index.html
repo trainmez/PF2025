@@ -111,20 +111,20 @@
             <div class="card">
                 <h2 class="text-xl font-semibold mb-4">Matérias</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <a href="#portugues" class="subject-link" onclick="showPage('portugues')">Língua Portuguesa</a>
-                    <a href="#raciocinio" class="subject-link" onclick="showPage('raciocinio')">Raciocínio Lógico-Matemático</a>
-                    <a href="#informatica" class="subject-link" onclick="showPage('informatica')">Informática</a>
-                    <a href="#fisica" class="subject-link" onclick="showPage('fisica')">Física</a>
-                    <a href="#etica" class="subject-link" onclick="showPage('etica')">Ética e Cidadania</a>
-                    <a href="#geopolitica" class="subject-link" onclick="showPage('geopolitica')">Geopolítica</a>
-                    <a href="#ingles" class="subject-link" onclick="showPage('ingles')">Língua Estrangeira (Inglês ou Espanhol)</a>
-                    <a href="#legislacao-transito" class="subject-link" onclick="showPage('legislacao-transito')">Legislação de Trânsito</a>
-                    <a href="#direito-administrativo" class="subject-link" onclick="showPage('direito-administrativo')">Direito Administrativo</a>
-                    <a href="#direito-constitucional" class="subject-link" onclick="showPage('direito-constitucional')">Direito Constitucional</a>
-                    <a href="#direito-penal" class="subject-link" onclick="showPage('direito-penal')">Direito Penal</a>
-                    <a href="#direito-processual-penal" class="subject-link" onclick="showPage('direito-processual-penal')">Direito Processual Penal</a>
-                    <a href="#legislacao-especial" class="subject-link" onclick="showPage('legislacao-especial')">Legislação Especial</a>
-                    <a href="#direitos-humanos" class="subject-link" onclick="showPage('direitos-humanos')">Direitos Humanos</a>
+                    <a href="#portugues" class="subject-link" onclick="showPage(event, 'portugues')">Língua Portuguesa</a>
+                    <a href="#raciocinio" class="subject-link" onclick="showPage(event, 'raciocinio')">Raciocínio Lógico-Matemático</a>
+                    <a href="#informatica" class="subject-link" onclick="showPage(event, 'informatica')">Informática</a>
+                    <a href="#fisica" class="subject-link" onclick="showPage(event, 'fisica')">Física</a>
+                    <a href="#etica" class="subject-link" onclick="showPage(event, 'etica')">Ética e Cidadania</a>
+                    <a href="#geopolitica" class="subject-link" onclick="showPage(event, 'geopolitica')">Geopolítica</a>
+                    <a href="#ingles" class="subject-link" onclick="showPage(event, 'ingles')">Língua Estrangeira (Inglês ou Espanhol)</a>
+                    <a href="#legislacao-transito" class="subject-link" onclick="showPage(event, 'legislacao-transito')">Legislação de Trânsito</a>
+                    <a href="#direito-administrativo" class="subject-link" onclick="showPage(event, 'direito-administrativo')">Direito Administrativo</a>
+                    <a href="#direito-constitucional" class="subject-link" onclick="showPage(event, 'direito-constitucional')">Direito Constitucional</a>
+                    <a href="#direito-penal" class="subject-link" onclick="showPage(event, 'direito-penal')">Direito Penal</a>
+                    <a href="#direito-processual-penal" class="subject-link" onclick="showPage(event, 'direito-processual-penal')">Direito Processual Penal</a>
+                    <a href="#legislacao-especial" class="subject-link" onclick="showPage(event, 'legislacao-especial')">Legislação Especial</a>
+                    <a href="#direitos-humanos" class="subject-link" onclick="showPage(event, 'direitos-humanos')">Direitos Humanos</a>
                 </div>
             </div>
         </div>
@@ -132,7 +132,7 @@
         <!-- Páginas de Matérias -->
         <div id="portugues" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Língua Portuguesa</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="portugues-progress-bar" class="progress-bar"></div>
@@ -247,7 +247,7 @@
 
         <div id="raciocinio" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Raciocínio Lógico-Matemático</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="raciocinio-progress-bar" class="progress-bar"></div>
@@ -362,7 +362,7 @@
 
         <div id="informatica" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Informática</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="informatica-progress-bar" class="progress-bar"></div>
@@ -429,7 +429,7 @@
 
         <div id="fisica" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Física</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="fisica-progress-bar" class="progress-bar"></div>
@@ -480,7 +480,7 @@
 
         <div id="etica" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Ética e Cidadania</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="etica-progress-bar" class="progress-bar"></div>
@@ -551,7 +551,7 @@
 
         <div id="geopolitica" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Geopolítica</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="geopolitica-progress-bar" class="progress-bar"></div>
@@ -606,7 +606,7 @@
 
         <div id="ingles" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Língua Estrangeira (Inglês ou Espanhol)</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="ingles-progress-bar" class="progress-bar"></div>
@@ -639,7 +639,7 @@
 
         <div id="legislacao-transito" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Legislação de Trânsito</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="legislacao-transito-progress-bar" class="progress-bar"></div>
@@ -666,7 +666,7 @@
 
         <div id="direito-administrativo" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direito Administrativo</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direito-administrativo-progress-bar" class="progress-bar"></div>
@@ -845,7 +845,7 @@
 
         <div id="direito-constitucional" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direito Constitucional</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direito-constitucional-progress-bar" class="progress-bar"></div>
@@ -972,7 +972,7 @@
 
         <div id="direito-penal" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direito Penal</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direito-penal-progress-bar" class="progress-bar"></div>
@@ -1103,7 +1103,7 @@
 
         <div id="direito-processual-penal" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direito Processual Penal</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direito-processual-penal-progress-bar" class="progress-bar"></div>
@@ -1194,7 +1194,7 @@
 
         <div id="legislacao-especial" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Legislação Especial</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="legislacao-especial-progress-bar" class="progress-bar"></div>
@@ -1257,7 +1257,7 @@
 
         <div id="direitos-humanos" class="page hidden">
             <div class="card">
-                <button class="back-button" onclick="showPage('home')">Voltar para a Página Inicial</button>
+                <button class="back-button" onclick="showPage(event, 'home')">Voltar para a Página Inicial</button>
                 <h2 class="text-xl font-semibold mb-4">Direitos Humanos</h2>
                 <div class="progress-bar-container mb-4">
                     <div id="direitos-humanos-progress-bar" class="progress-bar"></div>
@@ -1365,7 +1365,10 @@
         };
 
         // Função para mostrar a página correta e esconder as outras
-        function showPage(pageId) {
+        function showPage(event, pageId) {
+            // Previne o comportamento padrão do link (navegar para o href)
+            event.preventDefault();
+
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => {
                 page.classList.add('hidden');
@@ -1511,11 +1514,11 @@
 
             // Lida com a navegação inicial e o botão de voltar/avançar do navegador
             const initialPage = window.location.hash.substring(1) || 'home';
-            showPage(initialPage);
+            showPage(new Event('click'), initialPage); // Passa um evento fictício para a função showPage na inicialização
 
             window.addEventListener('popstate', (event) => {
                 const pageId = event.state ? event.state.page : 'home';
-                showPage(pageId);
+                showPage(new Event('click'), pageId); // Passa um evento fictício para a função showPage no popstate
             });
         });
     </script>
